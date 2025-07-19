@@ -6,22 +6,26 @@ cam = serial.Serial('/dev/ttyACM0', 11600,timeout=1)
 
 time.sleep(2)  # Give time for Arduino to reset
 
-azimuth = "35"
-elevation = "10"
-fire = "1"
-
-# Build the message as a string
-message = f"A:{azimuth};E:{elevation};F:{fire}\n"
-
-# Encode it as bytes and send
-ser.write(message.encode())
+fire = 1
 
 # Optionally, wait for a response from Arduino
 while True:
     if cam.in_waiting:
         data = cam.readline().decode().strip()
-        
+        print("cam:", data)
 
+        if "dx:" in data and "dy:" in data:
+            try:
+                parts = data.split(';')
+                azimuth = int(parts[0].split(':')[1])
+                elevation = int(parts[1].split(':')[1])
+                print(f"Parsed dx = {dx}, dy = {dy}")
+            except (IndexError, ValueError) as e:
+                print("Error parsing dx/dy:", e)
+
+                message = f"A:{azimuth};E:{elevation};F:{fire}\n"
+
+                ser.write(message.encode())
 
     if ser.in_waiting:
         response = ser.readline().decode().strip()
