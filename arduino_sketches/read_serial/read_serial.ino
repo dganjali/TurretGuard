@@ -3,7 +3,7 @@
 Servo myServo;
 int servoPin = 9;
 int currentPos = 90;
-#define kP 1
+#define kP 2
 
 void setup() {
   Serial.begin(9600);
@@ -14,7 +14,7 @@ void loop() {
   if (Serial.available()) {
     String input = Serial.readStringUntil('\n');
 
-    int dx = 0;
+    int dx = 90;
     int dy = 0;
     int fire = 0;
 
@@ -30,7 +30,7 @@ void loop() {
     if (aIndex != -1 && eIndex != -1 && fIndex != -1) {
       String aValue = input.substring(aIndex + 3, semicolon1);
       dx = aValue.toInt();
-      dx = (dx + 180)/2;
+      // dx = (dx + 180)/2;
 
       String eValue = input.substring(eIndex + 3, semicolon2);
       dy = eValue.toInt();
@@ -45,7 +45,7 @@ void loop() {
       // Serial.print("Fire: ");
       // Serial.println(fire);
 
-    myServo.write(kP*dx);
+    myServo.write((2*dx + 180)/2);
       
     }
   }
