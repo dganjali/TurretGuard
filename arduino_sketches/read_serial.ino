@@ -42,16 +42,19 @@ void loop() {
       Serial.print("Fire: ");
       Serial.println(fire);
 
-      // Basic servo control to reduce azimuth toward 0
+      // ✅ Only move servo if azimuth is not zero
       if (azimuth > 0 && currentPos > 0) {
         currentPos -= 1; // move left
+        myServo.write(currentPos);
+        Serial.print("Servo position: ");
+        Serial.println(currentPos);
       } else if (azimuth < 0 && currentPos < 180) {
         currentPos += 1; // move right
+        myServo.write(currentPos);
+        Serial.print("Servo position: ");
+        Serial.println(currentPos);
       }
-
-      myServo.write(currentPos);
-      Serial.print("Servo position: ");
-      Serial.println(currentPos);
+      // Do nothing if azimuth == 0
     }
   }
 }
