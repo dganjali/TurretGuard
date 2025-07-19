@@ -1,4 +1,4 @@
-# Edge Impulse - OpenMV FOMO Object Detection Example
+# Edge Impulse - OpenMV FOMO Object Detection Algorithm for Drowning Detection
 #
 # This work is licensed under the MIT license.
 # Copyright (c) 2013-2024 OpenMV LLC. All rights reserved.
@@ -14,9 +14,6 @@
   # - NN Settings: 60 Epoch Architecture, GPU Training Processor, NN Learning Optimizer Enabled, Data Augmentation, int8 Quantization | Input Layer: 27,648 Features
   # - RAM-Optimized Engine: EON (Edge Optimized Neural) Compiler
   # - .eim OpenMV Firmware + OpenMV Library DFU Integration
-
-
-
 
 
 import sensor, image, time, ml, math, uos, gc
@@ -43,13 +40,13 @@ except Exception as e:
     raise Exception('Failed to load "labels.txt", did you copy the .tflite and labels.txt file onto the mass-storage device? (' + str(e) + ')')
 
 colors = [ # Add more colors if you are detecting more than 7 types of classes at once.
-    (255,   0,   0),
-    (  0, 255,   0),
-    (255, 255,   0),
-    (  0,   0, 255),
-    (255,   0, 255),
-    (  0, 255, 255),
-    (255, 255, 255),
+    (255,   0,   0), ## red
+    (  0, 255,   0), ## green
+    (255, 255,   0), ## yellow
+    (  0,   0, 255), ## blue
+    (255,   0, 255), ## purple/fuschia/magenta/pinkish
+    (  0, 255, 255), ## cyan (blue-green)
+    (255, 255, 255), ##
 ]
 
 threshold_list = [(math.ceil(min_confidence * 255), 255)]
