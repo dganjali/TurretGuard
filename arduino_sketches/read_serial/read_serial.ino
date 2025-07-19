@@ -11,30 +11,46 @@ int currentPos = 90;
 #define L_EN 8
 #define servoPin 9
 
+// Button pin
+#define buttonPin 4
+bool systemEnabled = false;
+
 void setup() {
   Serial.begin(9600);
   myServo.attach(servoPin);
 
-  // Set motor control pins as outputs
+  // Motor setup
   pinMode(RPWM, OUTPUT);
   pinMode(LPWM, OUTPUT);
   pinMode(R_EN, OUTPUT);
   pinMode(L_EN, OUTPUT);
-
-  // Enable both sides
   digitalWrite(R_EN, HIGH);
   digitalWrite(L_EN, HIGH);
+
+  // Button setup
+  pinMode(buttonPin, INPUT_PULLUP);  // active LOW
 }
 
 void loop() {
+  // Wait for a one-time button press
+  if (!systemEnabled) {
+    if (digitalRead(buttonPin) == LOW) {
+      delay(50);  // debounce
+      if (digitalRead(buttonPin) == LOW) {
+        systemEnabled = true;
+        Serial.println("System Enabled");
+      }
+    }
+    return; // Exit loop() until systemEnabled is true
+  }
+
+  // 🔁 Once enabled, this runs forever
   if (Serial.available()) {
     String input = Serial.readStringUntil('\n');
 
     int dx = 90;
     int dy = 0;
     int fire = 0;
-
-    //"dx:4;dy:7;F:3\n"
 
     int aIndex = input.indexOf("dx:");
     int eIndex = input.indexOf("dy:");
@@ -56,10 +72,9 @@ void loop() {
       myServo.write((2 * dx + 180) / 2);
 
       if (fire >= 0.9 && abs(dx) < 5) {
-        // Spin motor forward at full speed
         analogWrite(RPWM, 255);
         analogWrite(LPWM, 0);
-        delay(900); // Adjust time as needed
+        delay(900);
         analogWrite(RPWM, 0);
         analogWrite(LPWM, 0);
       }
