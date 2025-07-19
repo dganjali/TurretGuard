@@ -1,18 +1,20 @@
 import serial
 import time
 
-
 ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
-time.sleep(2)
+time.sleep(2)  # Give time for Arduino to reset
 
-azimuth="35"
-elevation="10"
-fire="1"
+azimuth = "35"
+elevation = "10"
+fire = "1"
 
-message = b"A:"+azimuth+";E:"+elevation+";F:"+fire+"\n"
+# Build the message as a string
+message = f"A:{azimuth};E:{elevation};F:{fire}\n"
 
-ser.write(message)
+# Encode it as bytes and send
+ser.write(message.encode())
 
+# Optionally, wait for a response from Arduino
 while True:
     if ser.in_waiting:
         response = ser.readline().decode().strip()
