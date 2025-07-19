@@ -6,6 +6,11 @@
 
 ##### MODEL STACK | Pipeline:
   # - Edge Impulse Framework for Edge AI Computing
+  # - 1615 Image Samples: (96x96 Resolution + "Fit-Shortest" Axis Resizing) |  85% - 15% Train-Test Split
+  # - JSON Labelling Matrices for Feature Preprocessing
+  # - FOMO (Fast Object Motion Detection) MobileNetV2 0.35 (TinyML Neural Network for Real-time Object Detection)
+
+
 
 
 
