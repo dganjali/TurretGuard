@@ -2,12 +2,12 @@
 
 Servo myServo;
 int servoPin = 9;
-int currentPos = 90; // Start at midpoint (adjust as needed)
+int currentPos = 90; // Start at midpoint
 
 void setup() {
   Serial.begin(9600);
   myServo.attach(servoPin);
-  myServo.write(currentPos);  // Move to initial position
+  myServo.write(currentPos);  // Initial position
 }
 
 void loop() {
@@ -42,19 +42,21 @@ void loop() {
       Serial.print("Fire: ");
       Serial.println(fire);
 
-      // ✅ Only move servo if azimuth is not zero
-      if (azimuth > 0 && currentPos > 0) {
-        currentPos -= 1; // move left
+      // ✅ Move servo only if azimuth is significantly different from 0
+      if (azimuth > 2 && currentPos > 0) {
+        currentPos -= 1;
         myServo.write(currentPos);
         Serial.print("Servo position: ");
         Serial.println(currentPos);
-      } else if (azimuth < 0 && currentPos < 180) {
-        currentPos += 1; // move right
+      } else if (azimuth < -2 && currentPos < 180) {
+        currentPos += 1;
         myServo.write(currentPos);
         Serial.print("Servo position: ");
         Serial.println(currentPos);
+      } else {
+        // Azimuth is near 0 → do nothing
+        Serial.println("Azimuth near zero — no servo movement.");
       }
-      // Do nothing if azimuth == 0
     }
   }
 }
