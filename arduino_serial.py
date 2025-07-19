@@ -25,7 +25,7 @@ while True:
                 dx = int(parts[0].split(':')[1])
                 dy = int(parts[1].split(':')[1])
 
-                azimuth = dx
+                azimuth = -dx
                 elevation = dy
                 fire = 1 if abs(dx) < 5 and abs(dy) < 5 else 0
 
