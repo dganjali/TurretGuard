@@ -19,7 +19,7 @@ while True:
                 parts = data.split(';')
                 azimuth = int(parts[0].split(':')[1])
                 elevation = int(parts[1].split(':')[1])
-                print(f"Parsed dx = {dx}, dy = {dy}")
+                print(f"Parsed dx = {azimuth}, dy = {elevation}")
             except (IndexError, ValueError) as e:
                 print("Error parsing dx/dy:", e)
 
