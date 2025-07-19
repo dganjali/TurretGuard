@@ -1,5 +1,13 @@
+#include <Servo.h>
+
+Servo myServo;
+int servoPin = 9;
+int currentPos = 90; // Start at midpoint (adjust as needed)
+
 void setup() {
   Serial.begin(9600);
+  myServo.attach(servoPin);
+  myServo.write(currentPos);  // Move to initial position
 }
 
 void loop() {
@@ -13,7 +21,7 @@ void loop() {
     int aIndex = input.indexOf("A:");
     int eIndex = input.indexOf("E:");
     int fIndex = input.indexOf("F:");
-    
+
     int semicolon1 = input.indexOf(';');
     int semicolon2 = input.indexOf(';', semicolon1 + 1);
 
@@ -33,6 +41,17 @@ void loop() {
       Serial.println(elevation);
       Serial.print("Fire: ");
       Serial.println(fire);
+
+      // Basic servo control to reduce azimuth toward 0
+      if (azimuth > 0 && currentPos > 0) {
+        currentPos -= 1; // move left
+      } else if (azimuth < 0 && currentPos < 180) {
+        currentPos += 1; // move right
+      }
+
+      myServo.write(currentPos);
+      Serial.print("Servo position: ");
+      Serial.println(currentPos);
     }
   }
 }
