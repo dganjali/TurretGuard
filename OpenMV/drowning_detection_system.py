@@ -12,6 +12,8 @@
   # - Deployed Real-time on OpenMV H7 Cam Plus (Computer-Vision based Microcontroller) - Built in MicroPython (Python3 Lite)
   # - 4 Feature Class Segmentations
   # - NN Settings: 60 Epoch Architecture, GPU Training Processor, NN Learning Optimizer Enabled, Data Augmentation, int8 Quantization | Input Layer: 27,648 Features
+  # - RAM-Optimized Engine: EON (Edge Optimized Neural) Compiler
+  # - .eim OpenMV Firmware + OpenMV Library DFU Integration
 
 
 
