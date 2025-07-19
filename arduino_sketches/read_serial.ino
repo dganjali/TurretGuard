@@ -42,21 +42,24 @@ void loop() {
       Serial.print("Fire: ");
       Serial.println(fire);
 
-      // ✅ Move servo only if azimuth is significantly different from 0
+      // Movement logic
       if (azimuth > 2 && currentPos > 0) {
         currentPos -= 1;
-        myServo.write(currentPos);
-        Serial.print("Servo position: ");
-        Serial.println(currentPos);
       } else if (azimuth < -2 && currentPos < 180) {
         currentPos += 1;
-        myServo.write(currentPos);
-        Serial.print("Servo position: ");
-        Serial.println(currentPos);
-      } else {
-        // Azimuth is near 0 → do nothing
-        Serial.println("Azimuth near zero — no servo movement.");
+      } else if (azimuth == 0) {
+        // Gently return to center if not already centered
+        if (currentPos < 90) {
+          currentPos += 1;
+        } else if (currentPos > 90) {
+          currentPos -= 1;
+        }
       }
+
+      // Write to servo only if changed
+      myServo.write(currentPos);
+      Serial.print("Servo position: ");
+      Serial.println(currentPos);
     }
   }
 }
