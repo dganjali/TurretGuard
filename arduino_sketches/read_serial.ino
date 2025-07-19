@@ -42,13 +42,13 @@ void loop() {
       Serial.print("Fire: ");
       Serial.println(fire);
 
-      // Movement logic
-      if (azimuth > 2 && currentPos > 0) {
-        currentPos -= 1;
-      } else if (azimuth < -2 && currentPos < 180) {
-        currentPos += 1;
+      // Movement logic (reversed)
+      if (azimuth > 2 && currentPos < 180) {
+        currentPos += 1;  // reversed: increase to move right
+      } else if (azimuth < -2 && currentPos > 0) {
+        currentPos -= 1;  // reversed: decrease to move left
       } else if (azimuth == 0) {
-        // Gently return to center if not already centered
+        // Gently return to center
         if (currentPos < 90) {
           currentPos += 1;
         } else if (currentPos > 90) {
@@ -56,7 +56,6 @@ void loop() {
         }
       }
 
-      // Write to servo only if changed
       myServo.write(currentPos);
       Serial.print("Servo position: ");
       Serial.println(currentPos);
