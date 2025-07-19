@@ -5,13 +5,13 @@ import time
 ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
 time.sleep(2)
 
-azimuth=35
-elevation=10
-fire=1
+azimuth="35"
+elevation="10"
+fire="1"
 
-message = "A:"+str(azimuth)+";E:"+str(elevation)+";F:"+str(fire)+"\n"
+message = b"A:"+azimuth+";E:"+elevation+";F:"+fire+"\n"
 
-serial.write(message)
+ser.write(message)
 
 while True:
     if ser.in_waiting:
