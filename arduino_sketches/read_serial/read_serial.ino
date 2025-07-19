@@ -1,15 +1,15 @@
 #include <Servo.h>
 
 Servo myServo;
-int servoPin = 9;
 int currentPos = 90;
-#define kP 2
+#define kP 2.5
 
 // Motor control pins
 #define RPWM 5
 #define LPWM 6
 #define R_EN 7
 #define L_EN 8
+#define servoPin 9
 
 void setup() {
   Serial.begin(9600);
@@ -55,11 +55,11 @@ void loop() {
 
       myServo.write((2 * dx + 180) / 2);
 
-      if (fire == 1) {
+      if (fire >= 0.9 && abs(dx) < 5) {
         // Spin motor forward at full speed
         analogWrite(RPWM, 255);
         analogWrite(LPWM, 0);
-        delay(300); // Adjust time as needed
+        delay(900); // Adjust time as needed
         analogWrite(RPWM, 0);
         analogWrite(LPWM, 0);
       }
