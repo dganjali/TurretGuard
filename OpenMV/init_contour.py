@@ -2,8 +2,8 @@
 
 import sensor
 import time
-# import sys
-import pyb  # USB_VCP
+#import sys
+from pyb import USB_VCP
 
 #import image
 
@@ -31,12 +31,12 @@ sensor.set_auto_whitebal(False)
 clock = time.clock()
 
 # USB Virtual COM port for serial communication
-usb = pyb.USB_VCP()
+usb = USB_VCP()
+# usb.write("bello\n")
 
 while True:
     clock.tick()
     img = sensor.snapshot()
-
     blobs = img.find_blobs([red_threshold], pixels_threshold=150, area_threshold=150, merge=True)
 
     if blobs:
@@ -50,6 +50,10 @@ while True:
 
         dx = target.cx() - frame_center_x
         dy = target.cy() - frame_center_y
+
+        message = "dx:"+str(dx)+";dy:"+str(dy)+"\n"
+
+        usb.write(message)
 
         # Read data if available
         if usb.any():
