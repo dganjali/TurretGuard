@@ -5,9 +5,25 @@ int servoPin = 9;
 int currentPos = 90;
 #define kP 2
 
+// Motor control pins
+#define RPWM 5
+#define LPWM 6
+#define R_EN 7
+#define L_EN 8
+
 void setup() {
   Serial.begin(9600);
   myServo.attach(servoPin);
+
+  // Set motor control pins as outputs
+  pinMode(RPWM, OUTPUT);
+  pinMode(LPWM, OUTPUT);
+  pinMode(R_EN, OUTPUT);
+  pinMode(L_EN, OUTPUT);
+
+  // Enable both sides
+  digitalWrite(R_EN, HIGH);
+  digitalWrite(L_EN, HIGH);
 }
 
 void loop() {
@@ -30,7 +46,6 @@ void loop() {
     if (aIndex != -1 && eIndex != -1 && fIndex != -1) {
       String aValue = input.substring(aIndex + 3, semicolon1);
       dx = aValue.toInt();
-      // dx = (dx + 180)/2;
 
       String eValue = input.substring(eIndex + 3, semicolon2);
       dy = eValue.toInt();
@@ -38,15 +53,16 @@ void loop() {
       String fValue = input.substring(fIndex + 2);
       fire = fValue.toInt();
 
-      // Serial.print("dx: ");
-      // Serial.println(dx);
-      // Serial.print("dy: ");
-      // Serial.println(dy);
-      // Serial.print("Fire: ");
-      // Serial.println(fire);
+      myServo.write((2 * dx + 180) / 2);
 
-    myServo.write((2*dx + 180)/2);
-      
+      if (fire == 1) {
+        // Spin motor forward at full speed
+        analogWrite(RPWM, 255);
+        analogWrite(LPWM, 0);
+        delay(300); // Adjust time as needed
+        analogWrite(RPWM, 0);
+        analogWrite(LPWM, 0);
+      }
     }
   }
 }
