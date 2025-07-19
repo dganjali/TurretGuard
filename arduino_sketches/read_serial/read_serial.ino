@@ -3,7 +3,7 @@
 Servo myServo;
 int servoPin = 9;
 int currentPos = 90;
-#define kP
+#define kP -0.02
 
 void setup() {
   Serial.begin(9600);
@@ -44,7 +44,7 @@ void loop() {
       Serial.print("Fire: ");
       Serial.println(fire);
 
-    servo.write(kP*dx);
+    myServo.write(kP*dx);
       
     }
   }
