@@ -9,6 +9,9 @@
   # - 1615 Image Samples: (96x96 Resolution + "Fit-Shortest" Axis Resizing) |  85% - 15% Train-Test Split
   # - JSON Labelling Matrices for Feature Preprocessing
   # - FOMO (Fast Object Motion Detection) MobileNetV2 0.35 (TinyML Neural Network for Real-time Object Detection)
+  # - Deployed Real-time on OpenMV H7 Cam Plus (Computer-Vision based Microcontroller) - Built in MicroPython (Python3 Lite)
+  # - 4 Feature Class Segmentations
+  # - NN Settings: 60 Epoch Architecture, GPU Training Processor, NN Learning Optimizer Enabled, Data Augmentation, int8 Quantization | Input Layer: 27,648 Features
 
 
 
