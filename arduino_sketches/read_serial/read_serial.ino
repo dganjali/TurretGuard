@@ -28,22 +28,22 @@ void loop() {
     int semicolon2 = input.indexOf(';', semicolon1 + 1);
 
     if (aIndex != -1 && eIndex != -1 && fIndex != -1) {
-      String aValue = input.substring(aIndex + 2, semicolon1);
+      String aValue = input.substring(aIndex + 3, semicolon1);
       dx = aValue.toInt();
       dx = (dx + 180)/2;
 
-      String eValue = input.substring(eIndex + 2, semicolon2);
+      String eValue = input.substring(eIndex + 3, semicolon2);
       dy = eValue.toInt();
 
       String fValue = input.substring(fIndex + 2);
       fire = fValue.toInt();
 
-      Serial.print("dx: ");
-      Serial.println(dx);
-      Serial.print("dy: ");
-      Serial.println(dy);
-      Serial.print("Fire: ");
-      Serial.println(fire);
+      // Serial.print("dx: ");
+      // Serial.println(dx);
+      // Serial.print("dy: ");
+      // Serial.println(dy);
+      // Serial.print("Fire: ");
+      // Serial.println(fire);
 
     myServo.write(kP*dx);
       
