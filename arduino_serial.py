@@ -19,4 +19,3 @@ while True:
     if ser.in_waiting:
         response = ser.readline().decode().strip()
         print("received", response)
-        break
