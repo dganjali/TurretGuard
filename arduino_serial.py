@@ -29,7 +29,7 @@ while True:
                 elevation = dy
                 fire = 1 if abs(dx) < 5 and abs(dy) < 5 else 0
 
-                msg = f"A:{azimuth};E:{elevation};F:{fire}\n"
+                msg = f"dx:{azimuth};dy:{elevation};F:{fire}\n"
                 print("sending:", msg.strip())
                 ser.write(msg.encode())
 
@@ -43,7 +43,7 @@ while True:
         azimuth = 0
         elevation = 0
         fire = 0
-        msg = f"A:{azimuth};E:{elevation};F:{fire}\n"
+        msg = f"dx:{azimuth};dy:{elevation};F:{fire}\n"
         print("sending default:", msg.strip())
         ser.write(msg.encode())
         last_cam_time = now  # Prevent spamming
