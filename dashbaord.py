@@ -7,7 +7,7 @@ import io
 import time
 
 # ==== Config ====
-SERIAL_PORT = '/dev/ttyUSB0'  # Adjust if needed
+SERIAL_PORT = '/dev/ttyACM0'  # Adjust if needed
 BAUD_RATE = 115200
 
 # ==== UI Class ====
