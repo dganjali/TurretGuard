@@ -44,7 +44,7 @@ void loop() {
     return; // Exit loop() until systemEnabled is true
   }
 
-  // 🔁 Once enabled, this runs forever
+  // dx: 3; 
   if (Serial.available()) {
     String input = Serial.readStringUntil('\n');
 
@@ -54,10 +54,12 @@ void loop() {
 
     int aIndex = input.indexOf("dx:");
     int eIndex = input.indexOf("dy:");
+    int pIndex = input.indexOf("pitch:")
     int fIndex = input.indexOf("F:");
 
     int semicolon1 = input.indexOf(';');
     int semicolon2 = input.indexOf(';', semicolon1 + 1);
+    int semicolon3 = input.indexOf(';', semicolon2 + 1);
 
     if (aIndex != -1 && eIndex != -1 && fIndex != -1) {
       String aValue = input.substring(aIndex + 3, semicolon1);
@@ -66,17 +68,23 @@ void loop() {
       String eValue = input.substring(eIndex + 3, semicolon2);
       dy = eValue.toInt();
 
+      String pValue = input.substring(pIndex + 6, semicolon3);
+      pitch = pValue.toInt();
+
       String fValue = input.substring(fIndex + 2);
       fire = fValue.toInt();
 
-      // Serial.print("dx: ");
-      // Serial.println(dx);
-      // Serial.print("dy: ");
-      // Serial.println(dy);
-      // Serial.print("Fire: ");
-      // Serial.println(fire);
+      Serial.print("dx: ");
+      Serial.println(dx);
+      Serial.print("dy: ");
+      Serial.println(dy);
+      Serial.print("pitch: ");
+      Serial.println(pitch)
+      Serial.print("Fire: ");
+      Serial.println(fire);
+      // double error = (kP*dx + 180)/2;
 
-    myServo.write((2*dx + 180)/2);
+      myServo.write((kP*dx + 180)/2);
       
     }
   }
