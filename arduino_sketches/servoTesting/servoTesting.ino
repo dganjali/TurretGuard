@@ -27,21 +27,21 @@ void loop() {
 
   if (testStarted) {
     // --- Standard servo sweep ---
-    Serial.println("0");
-    standardServo.write(0);
-    delay(1000);
+    // Serial.println("0");
+    // standardServo.write(0);
+    // delay(1000);
 
-    Serial.println("90");
-    standardServo.write(90);
-    delay(1000);
+    // Serial.println("90");
+    // standardServo.write(90);
+    // delay(1000);
 
-    Serial.println("180");
-    standardServo.write(180);
-    delay(1000);
+    // Serial.println("180");
+    // standardServo.write(180);
+    // delay(1000);
 
-    // Serial.println("other servo forward");
-    // continuousServo.write(150);  
-    // delay(2000);
+    Serial.println("other servo forward");
+    continuousServo.write(130);  
+    delay(500);
 
     // Serial.println("other servo stop");
     // continuousServo.write(90);   
@@ -49,7 +49,7 @@ void loop() {
 
     // Serial.println("other servo reverse");
     // continuousServo.write(40);   
-    // delay(1000);
+    // delay(500);
 
     // Serial.println("other servo stop");
     // continuousServo.write(90);   

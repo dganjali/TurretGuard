@@ -2,7 +2,7 @@
 
 Servo myServo;
 int currentPos = 90;
-#define kP 2.5
+#define kP 0.6
 
 // Motor control pins
 #define RPWM 5
@@ -10,6 +10,7 @@ int currentPos = 90;
 #define R_EN 7
 #define L_EN 8
 #define servoPin 9
+#define kickerPin 10
 
 // Button pin
 #define buttonPin 4
@@ -51,10 +52,11 @@ void loop() {
     int dx = 90;
     int dy = 0;
     int fire = 0;
+    double pitch = 0;
 
     int aIndex = input.indexOf("dx:");
     int eIndex = input.indexOf("dy:");
-    int pIndex = input.indexOf("pitch:")
+    int pIndex = input.indexOf("pitch:");
     int fIndex = input.indexOf("F:");
 
     int semicolon1 = input.indexOf(';');
@@ -79,7 +81,7 @@ void loop() {
       Serial.print("dy: ");
       Serial.println(dy);
       Serial.print("pitch: ");
-      Serial.println(pitch)
+      Serial.println(pitch);
       Serial.print("Fire: ");
       Serial.println(fire);
       // double error = (kP*dx + 180)/2;
