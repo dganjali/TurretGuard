@@ -39,21 +39,21 @@ void loop() {
     standardServo.write(180);
     delay(1000);
 
-    Serial.println("forward");
-    continuousServo.write(120);  
-    delay(2000);
+    // Serial.println("other servo forward");
+    // continuousServo.write(150);  
+    // delay(2000);
 
-    Serial.println("other servo stop");
-    continuousServo.write(90);   
-    delay(1000);
+    // Serial.println("other servo stop");
+    // continuousServo.write(90);   
+    // delay(1000);
 
-    Serial.println("other servo reverse");
-    continuousServo.write(60);   
-    delay(2000);
+    // Serial.println("other servo reverse");
+    // continuousServo.write(40);   
+    // delay(1000);
 
-    Serial.println("other servo stop");
-    continuousServo.write(90);   
-    delay(1000);
+    // Serial.println("other servo stop");
+    // continuousServo.write(90);   
+    // delay(1000);
 
     testStarted = false;
 
