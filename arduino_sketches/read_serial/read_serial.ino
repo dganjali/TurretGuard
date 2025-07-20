@@ -45,7 +45,7 @@ void loop() {
       // Serial.print("Fire: ");
       // Serial.println(fire);
 
-    myServo.write((2*dx + 180)/2);
+    myServo.write((kP*dx + 180)/2 + );
       
     }
   }
