@@ -19,7 +19,7 @@ void loop() {
 
   analogWrite(RPWM, 0);  
   analogWrite(LPWM, 200);
-  delay(200);
+  delay(3000);
 
   analogWrite(RPWM, 0);
   analogWrite(LPWM, 0);
