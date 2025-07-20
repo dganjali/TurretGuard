@@ -69,15 +69,15 @@ void loop() {
       String fValue = input.substring(fIndex + 2);
       fire = fValue.toInt();
 
-      myServo.write((2 * dx + 180) / 2);
+      // Serial.print("dx: ");
+      // Serial.println(dx);
+      // Serial.print("dy: ");
+      // Serial.println(dy);
+      // Serial.print("Fire: ");
+      // Serial.println(fire);
 
-      if (fire >= 0.9 && abs(dx) < 5) {
-        analogWrite(RPWM, 255);
-        analogWrite(LPWM, 0);
-        delay(900);
-        analogWrite(RPWM, 0);
-        analogWrite(LPWM, 0);
-      }
+    myServo.write((2*dx + 180)/2);
+      
     }
   }
 }
