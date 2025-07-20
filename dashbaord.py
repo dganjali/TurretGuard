@@ -1,152 +1,153 @@
 import tkinter as tk
-from tkinter import ttk
 from PIL import Image, ImageTk
 import serial
 import threading
 import io
 import time
 
-# ==== Config ====
-SERIAL_PORT = '/dev/ttyACM0'  # Adjust if needed
-BAUD_RATE = 115200
+# Serial ports
+ARDUINO_PORT = '/dev/ttyUSB0'
+ARDUINO_BAUD = 9600
 
-# ==== UI Class ====
-class TurretGuardUI:
-    def __init__(self, master):
-        self.master = master
-        master.title("TurretGuard Control Panel")
-        master.geometry("800x600")
-        master.configure(bg="#1e1e1e")
+CAM_PORT = '/dev/ttyACM0'
+CAM_BAUD = 115200
 
-        # Serial setup
-        try:
-            self.ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
-        except Exception as e:
-            print("Failed to open serial port:", e)
-            exit()
+# Timing
+CAM_TIMEOUT = 0.2  # seconds to wait before sending default zero command
 
-        # Image Display
-        self.image_label = tk.Label(master, bg="black")
-        self.image_label.pack(pady=10)
+class TurretGuardApp:
+    def __init__(self, root):
+        self.root = root
+        root.title("TurretGuard Live Feed & Control")
+        root.geometry("800x600")
+        root.configure(bg="#222")
 
-        # Status Frame
-        self.status_frame = tk.Frame(master, bg="#1e1e1e")
-        self.status_frame.pack()
+        # Image label for camera feed
+        self.image_label = tk.Label(root, bg="black")
+        self.image_label.pack(padx=10, pady=10)
 
-        self.azimuth_var = tk.StringVar(value="Azimuth: --°")
-        self.elevation_var = tk.StringVar(value="Elevation: --°")
-        self.confidence_var = tk.StringVar(value="Confidence: --")
-        self.state_var = tk.StringVar(value="System: ---")
+        # Status labels
+        self.status_var = tk.StringVar(value="Waiting for data...")
+        self.status_label = tk.Label(root, textvariable=self.status_var, font=("Consolas", 14), fg="white", bg="#222")
+        self.status_label.pack(pady=5)
 
-        self.add_status_label("Azimuth", self.azimuth_var)
-        self.add_status_label("Elevation", self.elevation_var)
-        self.add_status_label("Confidence", self.confidence_var)
-        self.add_status_label("System", self.state_var)
+        # Open serial ports
+        self.ser_arduino = serial.Serial(ARDUINO_PORT, ARDUINO_BAUD, timeout=1)
+        self.ser_cam = serial.Serial(CAM_PORT, CAM_BAUD, timeout=0.1)
 
-        # Controls
-        self.controls_frame = tk.Frame(master, bg="#1e1e1e")
-        self.controls_frame.pack(pady=10)
+        # Last time cam data was received
+        self.last_cam_time = time.time()
 
-        tk.Button(self.controls_frame, text="Manual Fire", command=self.manual_fire,
-                  bg="#e74c3c", fg="white", width=15).grid(row=0, column=0, padx=10)
-
-        tk.Button(self.controls_frame, text="Abort Launch", command=self.abort_launch,
-                  bg="#f1c40f", fg="black", width=15).grid(row=0, column=1, padx=10)
+        # State vars
+        self.dx = 0
+        self.dy = 0
+        self.fire = 0
 
         # Start threads
         self.running = True
-        threading.Thread(target=self.serial_loop, daemon=True).start()
-        threading.Thread(target=self.image_loop, daemon=True).start()
+        threading.Thread(target=self.read_camera_data, daemon=True).start()
+        threading.Thread(target=self.read_arduino_data, daemon=True).start()
+        threading.Thread(target=self.image_feed_loop, daemon=True).start()
 
-    def add_status_label(self, name, var):
-        label = tk.Label(self.status_frame, textvariable=var, font=("Helvetica", 14),
-                         bg="#1e1e1e", fg="white", width=30, anchor="w")
-        label.pack()
+        # On close handler
+        root.protocol("WM_DELETE_WINDOW", self.on_close)
 
-    def serial_loop(self):
+    def read_camera_data(self):
+        """ Continuously read detection data lines from camera serial """
         while self.running:
             try:
-                line = self.ser.readline()
-                if b'\xFF\xD8' in line:
-                    continue  # Skip image bytes here
-                decoded = line.decode(errors='ignore').strip()
-                if decoded.startswith("A:"):
-                    self.parse_status(decoded)
+                if self.ser_cam.in_waiting:
+                    line = self.ser_cam.readline().decode(errors='ignore').strip()
+                    if "dx:" in line and "dy:" in line:
+                        parts = line.split(';')
+                        try:
+                            dx = int(parts[0].split(':')[1])
+                            dy = int(parts[1].split(':')[1])
+                            self.dx = dx
+                            self.dy = dy
+
+                            azimuth = -dx
+                            elevation = dy
+                            fire = 1 if abs(dx) < 5 and abs(dy) < 5 else 0
+                            self.fire = fire
+
+                            msg = f"dx:{azimuth};dy:{elevation};F:{fire}\n"
+                            self.ser_arduino.write(msg.encode())
+
+                            self.status_var.set(f"dx={dx}, dy={dy}, fire={fire}")
+
+                            self.last_cam_time = time.time()
+                        except Exception as e:
+                            self.status_var.set(f"Parse error: {e}")
+
+                # If no cam data for timeout period, send zero command
+                if time.time() - self.last_cam_time > CAM_TIMEOUT:
+                    msg = "dx:0;dy:0;F:0\n"
+                    self.ser_arduino.write(msg.encode())
+                    self.status_var.set("No camera data - sending zero command")
+                    self.last_cam_time = time.time()
+
+                time.sleep(0.01)
             except Exception as e:
-                print("Serial error:", e)
+                self.status_var.set(f"Camera read error: {e}")
+                time.sleep(0.1)
 
-    def parse_status(self, data):
-        try:
-            parts = data.split(";")
-            az = parts[0].split(":")[1]
-            el = parts[1].split(":")[1]
-            conf = parts[2].split(":")[1]
-            state = parts[3].split(":")[1]
-
-            self.azimuth_var.set(f"Azimuth: {az}°")
-            self.elevation_var.set(f"Elevation: {el}°")
-            self.confidence_var.set(f"Confidence: {float(conf)*100:.1f}%")
-            self.state_var.set(f"System: {state}")
-        except:
-            pass
-
-    def image_loop(self):
+    def read_arduino_data(self):
+        """ Continuously read and print Arduino serial data """
         while self.running:
             try:
-                if self.ser.in_waiting > 0:
-                    img = self.read_image()
-                    if img:
-                        self.show_image(img)
+                if self.ser_arduino.in_waiting:
+                    line = self.ser_arduino.readline().decode(errors='ignore').strip()
+                    if line:
+                        print("Arduino:", line)
             except Exception as e:
-                print("Image error:", e)
+                print("Arduino read error:", e)
+                time.sleep(0.1)
 
-    def read_image(self):
-        # Look for JPEG start marker
-        start = self.ser.read(2)
-        if start != b'\xFF\xD8':
-            return None
-        img_data = bytearray(start)
-        while True:
-            b = self.ser.read(1)
-            if not b:
-                return None
-            img_data.extend(b)
-            if img_data[-2:] == b'\xFF\xD9':  # JPEG end marker
-                break
-        try:
-            return Image.open(io.BytesIO(img_data))
-        except:
-            return None
+    def image_feed_loop(self):
+        """ Read JPEG images from camera serial and display in UI """
+        while self.running:
+            try:
+                # Look for JPEG start marker
+                start = self.ser_cam.read(2)
+                if start != b'\xFF\xD8':
+                    continue  # Not start of JPEG, skip
 
-    def show_image(self, img):
-        img = img.resize((640, 480))
-        tk_img = ImageTk.PhotoImage(img)
-        self.image_label.config(image=tk_img)
-        self.image_label.image = tk_img
+                img_data = bytearray(start)
+                while True:
+                    b = self.ser_cam.read(1)
+                    if not b:
+                        break
+                    img_data.extend(b)
+                    if img_data[-2:] == b'\xFF\xD9':  # JPEG end
+                        break
 
-    def manual_fire(self):
-        try:
-            self.ser.write(b"FIRE\n")
-        except:
-            print("Failed to send fire command")
+                from PIL import Image
+                img = Image.open(io.BytesIO(img_data))
+                img = img.resize((640, 480))
+                img_tk = ImageTk.PhotoImage(img)
 
-    def abort_launch(self):
-        try:
-            self.ser.write(b"ABORT\n")
-        except:
-            print("Failed to send abort command")
+                # Update UI in main thread
+                self.root.after(0, self.update_image, img_tk)
+            except Exception as e:
+                # Ignore corrupt images or timeout
+                #print("Image error:", e)
+                time.sleep(0.01)
+
+    def update_image(self, img_tk):
+        self.image_label.configure(image=img_tk)
+        self.image_label.image = img_tk
 
     def on_close(self):
         self.running = False
         try:
-            self.ser.close()
+            self.ser_cam.close()
+            self.ser_arduino.close()
         except:
             pass
-        self.master.destroy()
+        self.root.destroy()
 
-# ==== Run the App ====
 if __name__ == "__main__":
     root = tk.Tk()
-    app = TurretGuardUI(root)
-    root.protocol("WM_DELETE_WINDOW", app.on_close)
+    app = TurretGuardApp(root)
     root.mainloop()
