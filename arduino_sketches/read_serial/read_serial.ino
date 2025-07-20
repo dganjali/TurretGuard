@@ -1,24 +1,56 @@
 #include <Servo.h>
 
 Servo myServo;
-int servoPin = 9;
 int currentPos = 90;
-#define kP 2
+#define kP 2.5
+
+// Motor control pins
+#define RPWM 5
+#define LPWM 6
+#define R_EN 7
+#define L_EN 8
+#define servoPin 9
+
+// Button pin
+#define buttonPin 4
+bool systemEnabled = false;
 
 void setup() {
   Serial.begin(9600);
   myServo.attach(servoPin);
+
+  // Motor setup
+  pinMode(RPWM, OUTPUT);
+  pinMode(LPWM, OUTPUT);
+  pinMode(R_EN, OUTPUT);
+  pinMode(L_EN, OUTPUT);
+  digitalWrite(R_EN, HIGH);
+  digitalWrite(L_EN, HIGH);
+
+  // Button setup
+  pinMode(buttonPin, INPUT_PULLUP);  // active LOW
 }
 
 void loop() {
+  // Wait for a one-time button press
+  if (!systemEnabled) {
+    if (digitalRead(buttonPin) == LOW) {
+      delay(50);  // debounce
+      if (digitalRead(buttonPin) == LOW) {
+        systemEnabled = true;
+        Serial.println("System Enabled");
+      }
+    }
+    return; // Exit loop() until systemEnabled is true
+  }
+
+  // 🔁 Once enabled, this runs forever
   if (Serial.available()) {
     String input = Serial.readStringUntil('\n');
 
     int dx = 90;
     int dy = 0;
     int fire = 0;
-
-    //"dx:4;dy:7;F:3\n"
 
     int aIndex = input.indexOf("dx:");
     int eIndex = input.indexOf("dy:");
@@ -30,7 +62,6 @@ void loop() {
     if (aIndex != -1 && eIndex != -1 && fIndex != -1) {
       String aValue = input.substring(aIndex + 3, semicolon1);
       dx = aValue.toInt();
-      // dx = (dx + 180)/2;
 
       String eValue = input.substring(eIndex + 3, semicolon2);
       dy = eValue.toInt();
@@ -45,7 +76,7 @@ void loop() {
       // Serial.print("Fire: ");
       // Serial.println(fire);
 
-    myServo.write((kP*dx + 180)/2 + );
+    myServo.write((2*dx + 180)/2);
       
     }
   }
