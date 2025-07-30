@@ -1,6 +1,6 @@
 # TurretGuard - Autonomous Drowning Detection & Response System
 
-An intelligent water safety system that combines computer vision, machine learning, and robotics to automatically detect drowning incidents and provide immediate response through an automated water rescue turret.
+An intelligent water safety system that combines computer vision, machine learning, and robotics to automatically detect drowning incidents and provide immediate response through an automated water rescue turret. 
 
 ## Overview
 
